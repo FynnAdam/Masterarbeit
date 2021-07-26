@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import multiprocessing as mp
 
-#Model
+# Methode lernt neuronales Netzwerk und gibt den Fehler mit weiteren Ergebnissen zurück. 
+# Zu der einer vorgegebenen Größe für die Dimension des Trainingsamples (n_train) wird ein 
+# neuronales Netz mit s nicht-null Parametern (im EW), der Tiefe L und p_i Neuronen je Schicht gelernt.
 def netz(n_train,s,L,p_i):
     # erzeuge lineare Regressionsfunktion mit Dimension d und und Summanden mit Hölderkonstante K, beta =1
     d = 2
@@ -47,7 +49,7 @@ def netz(n_train,s,L,p_i):
 
 
 if __name__ == '__main__':
-    pool = mp.Pool(3)
+    pool = mp.Pool(12)
     list_s = [250,500,750,1000]
     list_n_train = list(range(100,251,10))+list(range(300, 501, 50))+list(range(600,1501,100))
     results = [pool.apply_async(netz, args = (n,s,20,10)) for s in list_s for n in list_n_train*25]
