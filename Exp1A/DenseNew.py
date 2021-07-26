@@ -3,8 +3,8 @@ from tensorflow.keras.layers import Layer
 from tensorflow.python.keras import activations
 from tensorflow.keras import regularizers
 
-# erzeugt eine dünn besetzte Schicht
-# trainierbare Gewichte bzw. Verschiebungsvektoren können mit matW bzw. vecB eingestellt werden
+# Python-Klasse erzeugt eine Schicht, in der die Gewichte bzw. Verschiebungsvektoren manuel als trainierbar oder nicht trainierbar 
+# eingestellt werden können. Trainierbare Gewichte bzw. Verschiebungsvektoren können mit matW bzw. vecB eingestellt werden.
 class SparseDense(Layer):
 
    def __init__(self,matW,vecB,activation=None,kernel_regularizer=None,bias_regularizer=None,**kwargs):
