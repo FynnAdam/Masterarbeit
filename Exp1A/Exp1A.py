@@ -7,47 +7,47 @@ import multiprocessing as mp
 # Zu der einer vorgegebenen Größe für die Dimension des Trainingsamples (n_train) wird ein 
 # neuronales Netz mit s nicht-null Parametern (im EW), der Tiefe L und p_i Neuronen je Schicht gelernt.
 def netz(n_train,s,L,p_i):
-    # erzeuge lineare Regressionsfunktion mit Dimension d und und Summanden mit Hölderkonstante K, beta =1
+    # Es wird die lineare Regressionsfunktion mit Dimension d, Hölderkonstante K und  beta = 1 erzeugt.
     d = 2
     K = 15
     f_coeff = list(tuple(map(lambda x: K, list(range(1, d + 1)))))
     f0 = lambda *x: sum(list(map(lambda x1, x2: x1 * x2, *x, f_coeff)))
 
-    # Datensample (trainingsdatensatz) mit std.norm.vert. Fehler
+    # Datensample (Trainingsdatensatz) mit std.norm.vert. Fehler.
     x = np.random.uniform(0, 1, size=(n_train, d))
     y = noisy_sig(np.fromiter(map(f0, x), dtype=np.int), 1)
-
+    
+    # Testsample (Testdatensatz).
     n_test = 5000
     x_orig = np.random.uniform(0, 1, size=(n_test, d))
     y_orig = np.fromiter(map(f0, x_orig), dtype=np.int)
 
-    # modifiziere Parameter neuronales Netz
+    # Modifiziere Parameter des neuronalen Netzes.
     p = list(tuple(map(lambda x: p_i, list(range(1, L + 1)))))
     p.append(1)
     p.insert(0, d)
 
-    # netzwerk
+    # Netzwerk wird gelernt.
     NN1 = NeuronalNetwork(L, p, s)
     NN1.NN.compile("adam", 'mse', tf.keras.metrics.MeanSquaredError())
     NN1.NN.summary()
     NN1.fit(x, y, epochs=100, batch=100)
-
     y_pred = NN1.NN.predict(x_orig)
     NN1.NN.evaluate(x_orig, y_orig)
 
-    # Analysiere Netz/zähle nullen
+    # Analysiere Netz/zähle Nullen
     weights = NN1.NN.get_weights()
     max_abs_weight = max(abs(min(weights).sum()), abs(max(weights).sum()))
     F = max((K+1)*d,(p_i + 1) * L * max_abs_weight)
     T = sum([(p[i-1]+1)*p[i] for i in range(1,L+2,1)])-1
 
-    # speichere Daten
+    # Speichere Daten.
     mse = tf.keras.losses.MeanSquaredError()
     return [n_train, n_test, L, s, T, p_i,
                         mse(y_orig, y_pred).numpy() / len(y_orig), d, K, F, max_abs_weight]
 
 
-
+# Methode 'netz' wird benutzt um das lernen der Netze parallel auszuführen.
 if __name__ == '__main__':
     pool = mp.Pool(12)
     list_s = [250,500,750,1000]
